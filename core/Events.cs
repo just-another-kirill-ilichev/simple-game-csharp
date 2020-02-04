@@ -31,7 +31,7 @@ namespace SimpleGame.Core
         }
     }
 
-    public enum MouseButtonState
+    public enum ButtonState
     {
         Pressed = (int)SDL.SDL_PRESSED,
         Released = (int)SDL.SDL_RELEASED
@@ -50,13 +50,13 @@ namespace SimpleGame.Core
     {
         public byte Clicks { get; }
         public MouseButton Button { get; }
-        public MouseButtonState State { get; }
+        public ButtonState ButtonState { get; }
 
         public MouseButtonEventArgs(SDL.SDL_MouseButtonEvent e) : base(e.x, e.y, e.windowID, e.which, e.type, e.timestamp)
         {
             Clicks = e.clicks;
             Button = (MouseButton)e.button;
-            State = (MouseButtonState)e.state;
+            ButtonState = (ButtonState)e.state;
         }
     }
 
@@ -71,10 +71,46 @@ namespace SimpleGame.Core
         }
     }
 
+    public class KeyData
+    {
+        public SDL.SDL_Keymod Modifiers { get; }
+        public SDL.SDL_Keycode Key { get; }
+        public SDL.SDL_Scancode Scancode { get; }
+
+
+        public KeyData(SDL.SDL_Keysym key)
+        {
+            Modifiers = key.mod;
+            Key = key.sym;
+            Scancode = key.scancode;
+        }
+    }
+
+    public class KeyboardEventArgs : SDLBaseEventArgs
+    {
+        public uint WindowId { get; }
+        public ButtonState ButtonState { get; }
+        public byte Repeat { get; }
+        public KeyData KeyData { get; }
+
+        public KeyboardEventArgs(SDL.SDL_KeyboardEvent e) : base(e.type, e.timestamp)
+        {
+            WindowId = e.windowID;
+            ButtonState = (ButtonState)e.state;
+            Repeat = e.repeat;
+            KeyData = new KeyData(e.keysym);
+        }
+    }
+
     public static class Events
     {
         public static event EventHandler<SDLBaseEventArgs> Close;
-        public static event EventHandler<MouseButtonEventArgs> MouseDown;
+        public static event EventHandler<MouseButtonEventArgs> MouseButtonDown;
+        public static event EventHandler<MouseButtonEventArgs> MouseButtonUp;
+        public static event EventHandler<KeyboardEventArgs> KeyDown;
+        public static event EventHandler<KeyboardEventArgs> KeyUp;
+        
+        
 
 
         public static void Process()
@@ -87,8 +123,16 @@ namespace SimpleGame.Core
                         Close?.Invoke(null, new SDLBaseEventArgs(e.type, e.quit.timestamp));
                         break;
                     case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                        MouseButtonDown?.Invoke(null, new MouseButtonEventArgs(e.button));
+                        break;
                     case SDL.SDL_EventType.SDL_MOUSEBUTTONUP:
-                        MouseDown?.Invoke(null, new MouseButtonEventArgs(e.button));
+                        MouseButtonUp?.Invoke(null, new MouseButtonEventArgs(e.button));
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYDOWN:
+                        KeyDown?.Invoke(null, new KeyboardEventArgs(e.key));
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYUP:
+                        KeyUp?.Invoke(null, new KeyboardEventArgs(e.key));
                         break;
                 }
             }

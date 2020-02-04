@@ -10,6 +10,7 @@ namespace SimpleGame
         {
             var app = new SDLApplication();
             app.Run();
+            app.Dispose();
         }
     }
 }
