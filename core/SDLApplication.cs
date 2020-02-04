@@ -1,8 +1,9 @@
+using System;
 using SDL2;
 
 namespace SimpleGame.Core
 {
-    public class SDLApplication
+    public class SDLApplication : IDisposable
     {
         private bool _isRunning;
         public Window Window { get; }
@@ -32,7 +33,7 @@ namespace SimpleGame.Core
             }
         }
 
-        public void CleanUp()
+        public void Dispose()
         {
             Window.Dispose();
 
