@@ -111,8 +111,6 @@ namespace SimpleGame.Core
         public static event EventHandler<KeyboardEventArgs> KeyUp;
         
         
-
-
         public static void Process()
         {
             while (SDL.SDL_PollEvent(out var e) != 0)
