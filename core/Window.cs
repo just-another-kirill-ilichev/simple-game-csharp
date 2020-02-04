@@ -34,6 +34,15 @@ namespace SimpleGame.Core
             SDL.SDL_SetRenderDrawBlendMode(_rendererHandle, SDL.SDL_BlendMode.SDL_BLENDMODE_BLEND);
         }
 
+        public void Clear()
+        {
+            SDL.SDL_RenderClear(_rendererHandle);
+        }
+
+        public void Refresh()
+        {
+            SDL.SDL_RenderPresent(_rendererHandle);
+        }
 
         private void CheckDisposed()
         {

@@ -23,6 +23,12 @@ namespace SimpleGame.Core
             while (_isRunning)
             {
                 Events.Process();
+
+                // TODO Logic update
+
+                Window.Clear();
+                // TODO Redraw
+                Window.Refresh();
             }
         }
 
