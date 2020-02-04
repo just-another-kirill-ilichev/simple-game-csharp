@@ -3,11 +3,6 @@ using SDL2;
 
 namespace SimpleGame.Core
 {
-    public static class Keyboard
-    {
-
-    }
-
     public class SDLBaseEventArgs : EventArgs
     {
         public SDL.SDL_EventType Type { get; }
@@ -17,6 +12,22 @@ namespace SimpleGame.Core
         {
             Type = type;
             Timestamp = timestamp;
+        }
+    }
+
+    public class MouseBaseEventArgs : SDLBaseEventArgs
+    {
+        public int X { get; }
+        public int Y { get; }
+        public uint WindowId { get; }
+        public uint MouseId { get; }
+
+        public MouseBaseEventArgs(int x, int y, uint windowId, uint mouseId, SDL.SDL_EventType type, uint timestamp) : base(type, timestamp)
+        {
+            X = x;
+            Y = y;
+            WindowId = windowId;
+            MouseId = mouseId;
         }
     }
 
@@ -35,25 +46,28 @@ namespace SimpleGame.Core
         X2 = (int)SDL.SDL_BUTTON_X2,
     }
 
-    public class MouseButtonEventArgs : SDLBaseEventArgs
+    public class MouseButtonEventArgs : MouseBaseEventArgs
     {
         public byte Clicks { get; }
-        public int X { get; }
-        public int Y { get; }
         public MouseButton Button { get; }
         public MouseButtonState State { get; }
-        public uint WindowId { get; }
-        public uint MouseId { get; }
 
-        public MouseButtonEventArgs(SDL.SDL_MouseButtonEvent e) : base(e.type, e.timestamp)
+        public MouseButtonEventArgs(SDL.SDL_MouseButtonEvent e) : base(e.x, e.y, e.windowID, e.which, e.type, e.timestamp)
         {
             Clicks = e.clicks;
-            X = e.x;
-            Y = e.y;
             Button = (MouseButton)e.button;
             State = (MouseButtonState)e.state;
-            WindowId = e.windowID;
-            MouseId = e.which;
+        }
+    }
+
+    public class MouseMotionEventArgs : MouseBaseEventArgs
+    {
+        public int XRel { get; }
+        public int YRel { get; }
+        MouseMotionEventArgs(SDL.SDL_MouseMotionEvent e) : base(e.x, e.y, e.windowID, e.which, e.type, e.timestamp)
+        {
+            XRel = e.xrel;
+            YRel = e.yrel;
         }
     }
 
