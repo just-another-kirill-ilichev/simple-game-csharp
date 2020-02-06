@@ -23,8 +23,6 @@ namespace SimpleGame.Core
 
         public Window(string title, int w, int h)
         {
-            _disposed = true;
-
             _windowHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_CENTERED,
                 SDL.SDL_WINDOWPOS_CENTERED, w, h, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
 
@@ -36,11 +34,13 @@ namespace SimpleGame.Core
 
         public void Clear()
         {
+            CheckDisposed();
             SDL.SDL_RenderClear(_rendererHandle);
         }
 
         public void Refresh()
         {
+            CheckDisposed();
             SDL.SDL_RenderPresent(_rendererHandle);
         }
 
@@ -59,6 +59,8 @@ namespace SimpleGame.Core
 
             SDL.SDL_DestroyRenderer(_rendererHandle);
             SDL.SDL_DestroyWindow(_windowHandle);
+
+            _disposed = true;
         }
 
         public void Dispose()
