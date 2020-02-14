@@ -1,8 +1,10 @@
 using System;
-using System.Linq;
+using System.IO;
+using Newtonsoft.Json;
 using SDL2;
 using SimpleGame.ECS;
 using SimpleGame.ECS.Components;
+using SimpleGame.ECS.Systems;
 
 namespace SimpleGame.Core
 {
@@ -10,54 +12,69 @@ namespace SimpleGame.Core
     {
         private bool _isRunning;
         public Window Window { get; }
-        private ResourceManager _resourceManager;
-        private EntityManager _entityManager;
+        public ResourceManager ResourceManager { get; }
+        public EntityManager EntityManager { get; }
+        public SystemManager SystemManager { get; }
 
         public SDLApplication()
         {
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
 
             _isRunning = true;
-            _resourceManager = new ResourceManager(this);
-
+            
             Window = new Window("test", 800, 600);
-
-            _resourceManager.Load("tBrick", "SimpleGame.Core.Texture", "./resources/brick.jpg");
-            _entityManager = new EntityManager();
-
+            Events.Close += (o, e) => _isRunning = false;
+            
+            ResourceManager = new ResourceManager(this);
+            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "./resources/brick.jpg");
+            SystemManager = new SystemManager();
+            SystemManager.Add(new RenderingSystem(this));
+            EntityManager = new EntityManager();
+            
             var entity = new Component[]
             {
-                new TransformComponent(){ X = 59, Y = 30, Angle = 0 },
+                // Create a name for the new entity. It will be used for logging & debuging
+                new NameComponent() { Name = "Test entity" }, 
+                // TransformComponent holds information about position and rotation of entity
+                // This information used by RenderingSystem and MovementSystem to provide
+                // visualization of the entity and response to keyboard input  
+                new TransformComponent(){ X = 59, Y = 30, Rotation = 0 }, 
+                // TextureComponent contains name of texture resource stored into ResourceManager class
+                // Used by any kind of visualization system
                 new TextureComponent() { TextureResourceName = "tBrick" }
             };
 
-            _entityManager.AddEntity(entity);
+            // using (FileStream fs = new FileStream("./resources/test.json", FileMode.Truncate))
+            // {
+                
+            // }
 
-            Events.Close += (o, e) => _isRunning = false;
+
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
+            Console.WriteLine(JsonConvert.SerializeObject(entity, settings));
+
+            EntityManager.AddEntity(0, entity);
         }
 
         public void Run()
         {
             while (_isRunning)
             {
+                var time = DateTime.Now;
+
                 Events.Process();
 
                 // TODO Logic update
 
                 Window.Clear();
-
-                var entities = _entityManager.Entities
-                    .WithComponent<TransformComponent>(_entityManager)
-                    .WithComponent<TextureComponent>(_entityManager)
-                    .ToArray();
-
-                var transform = _entityManager.GetComponent<TransformComponent>(entities[0]);
-                var texture = _entityManager.GetComponent<TextureComponent>(entities[0]);
-
-                _resourceManager.Get<Texture>(texture.TextureResourceName).Draw((int)transform.X, (int)transform.Y);
-                // TODO Redraw
+                SystemManager.Redraw();
                 Window.Refresh();
+
+                var delta = DateTime.Now - time;
+                Console.Write($"\rFrame time: {delta.TotalMilliseconds}");
             }
+
+            Console.Clear();
         }
 
         public void Dispose()

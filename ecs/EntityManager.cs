@@ -19,6 +19,8 @@ namespace SimpleGame.ECS
 
     public class EntityManager
     {
+        public static int InvalidEntityId => -1;
+
         private Dictionary<Type, Dictionary<int, Component>> _componentsByType;
         private List<int> _ids;
 
@@ -30,11 +32,15 @@ namespace SimpleGame.ECS
             _ids = new List<int>();
         }
 
-        public void AddEntity(IEnumerable<Component> entityComponents)
+        public void AddEntity(int entityId, IEnumerable<Component> entityComponents)
         {
-            int id = _ids.Count;
+            if (Entities.Contains(entityId))
+                throw new Exception(); // TODO
 
-            _ids.Add(id);
+            if (entityId == InvalidEntityId)
+                throw new Exception(); // TODO
+
+            _ids.Add(entityId);
 
             foreach (var component in entityComponents)
             {
@@ -43,13 +49,16 @@ namespace SimpleGame.ECS
                     _componentsByType.Add(component.GetType(), new Dictionary<int, Component>());
                 }
 
-                _componentsByType[component.GetType()].Add(id, component);
+                _componentsByType[component.GetType()].Add(entityId, component);
             }
 
         }
 
         public void RemoveEntity(int entityId)
         {
+            if (!Entities.Contains(entityId))
+                throw new Exception(); // TODO
+            
             foreach (var components in _componentsByType.Values)
             {
                 if (components.ContainsKey(entityId))
@@ -61,6 +70,9 @@ namespace SimpleGame.ECS
 
         public IEnumerable<Component> GetEntity(int entityId)
         {
+            if (!Entities.Contains(entityId))
+                throw new Exception(); // TODO
+
             var temp = new List<Component>();
 
             foreach (var components in _componentsByType.Values)
@@ -76,6 +88,9 @@ namespace SimpleGame.ECS
 
         public bool HasComponent<T>(int entityId) where T : Component
         {
+            if (!Entities.Contains(entityId))
+                throw new Exception(); // TODO
+            
             if (_componentsByType.ContainsKey(typeof(T)))
             {
                 return _componentsByType[typeof(T)].ContainsKey(entityId);
@@ -102,6 +117,12 @@ namespace SimpleGame.ECS
                 throw new Exception(); // TODO
 
             return _componentsByType[typeof(T)];
+        }
+
+        public void Clear()
+        {
+            _componentsByType.Clear();
+            _ids.Clear();
         }
     }
 }
