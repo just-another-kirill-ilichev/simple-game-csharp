@@ -4,6 +4,6 @@ namespace SimpleGame.ECS.Components
     {
         public float X { get; set; }
         public float Y { get; set; }
-        public float Angle { get; set; }
+        public float Rotation { get; set; }
     }
 }
