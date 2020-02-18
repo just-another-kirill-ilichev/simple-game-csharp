@@ -52,6 +52,14 @@ namespace SimpleGame.Core
         public T Get<T>(string name) where T : Resource =>
             _resources[name] as T;
 
+        public void Clear()
+        {
+            foreach (var resource in _resources.Values)
+            {
+                resource.Dispose();
+            }
 
+            _resources.Clear();
+        }
     }
 }
