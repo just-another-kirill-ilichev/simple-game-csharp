@@ -32,26 +32,40 @@ namespace SimpleGame.ECS
             _ids = new List<int>();
         }
 
-        public void AddEntity(int entityId, IEnumerable<Component> entityComponents)
+        public void AddComponent(int entityId, Component component)
+        {
+            if (!Entities.Contains(entityId))
+                throw new ArgumentException($"Entity with id={entityId} does not exist.");
+
+            if (component is null)
+                throw new ArgumentNullException(nameof(component));
+
+            if (component.EntityId != InvalidEntityId)
+                throw new ArgumentException("This component already have owner entity.");
+
+            if (!_componentsByType.ContainsKey(component.GetType()))
+                _componentsByType.Add(component.GetType(), new Dictionary<int, Component>());
+
+            _componentsByType[component.GetType()].Add(entityId, component);
+        }
+
+        public void CreateEntity(int entityId, IEnumerable<Component> entityComponents)
         {
             if (Entities.Contains(entityId))
-                throw new Exception(); // TODO
+                throw new ArgumentException($"Entity with id = {entityId} already exist.");
 
             if (entityId == InvalidEntityId)
-                throw new Exception(); // TODO
+                throw new ArgumentException("Cannot create entity with invalid id.");
+
+            if (entityComponents is null)
+                throw new ArgumentNullException(nameof(entityComponents));
 
             _ids.Add(entityId);
 
             foreach (var component in entityComponents)
             {
-                if (!_componentsByType.ContainsKey(component.GetType()))
-                {
-                    _componentsByType.Add(component.GetType(), new Dictionary<int, Component>());
-                }
-
-                _componentsByType[component.GetType()].Add(entityId, component);
+                AddComponent(entityId, component);
             }
-
         }
 
         public void RemoveEntity(int entityId)

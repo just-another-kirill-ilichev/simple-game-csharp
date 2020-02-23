@@ -26,7 +26,7 @@ namespace SimpleGame.Core
             Events.Close += (o, e) => _isRunning = false;
             
             ResourceManager = new ResourceManager(this);
-            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "./resources/brick.jpg");
+            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "../resources/brick.jpg");
             SystemManager = new SystemManager();
             SystemManager.Add(new RenderingSystem(this));
             EntityManager = new EntityManager();
@@ -53,7 +53,7 @@ namespace SimpleGame.Core
             var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
             Console.WriteLine(JsonConvert.SerializeObject(entity, settings));
 
-            EntityManager.AddEntity(0, entity);
+            EntityManager.CreateEntity(0, entity);
         }
 
         public void Run()
