@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Drawing;
 using Newtonsoft.Json;
 using SDL2;
 using SimpleGame.ECS;
 using SimpleGame.ECS.Components;
+using SimpleGame.ECS.Components.UI;
 using SimpleGame.ECS.Systems;
 
 namespace SimpleGame.Core
@@ -19,18 +21,22 @@ namespace SimpleGame.Core
         public SDLApplication()
         {
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
+            //SDL_image.IMG_Init();
+            SDL_ttf.TTF_Init();
 
             _isRunning = true;
-            
+
             Window = new Window("test", 800, 600);
             Events.Close += (o, e) => _isRunning = false;
-            
+
             ResourceManager = new ResourceManager(this);
-            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "../resources/brick.jpg");
+            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "./resources/brick.jpg");
+            ResourceManager.Add("fontTest24", new Font(this, "./resources/10423.ttf", 24));
             SystemManager = new SystemManager();
             SystemManager.Add(new RenderingSystem(this));
+            SystemManager.Add(new UISystem(this));
             EntityManager = new EntityManager();
-            
+
             var entity = new Component[]
             {
                 // Create a name for the new entity. It will be used for logging & debuging
@@ -44,9 +50,16 @@ namespace SimpleGame.Core
                 new TextureComponent() { TextureResourceName = "tBrick" }
             };
 
+            var textEntity = new Component[]
+            {
+                new NameComponent() { Name = "text tests" },
+                new TransformComponent() { X = 100, Y = 5, Rotation = 0 },
+                new TextUI(){ FontResourceRef = "fontTest24", Text = "Test123", TextColor = Color.Red }
+            };
+
             // using (FileStream fs = new FileStream("./resources/test.json", FileMode.Truncate))
             // {
-                
+
             // }
 
 
@@ -54,6 +67,7 @@ namespace SimpleGame.Core
             Console.WriteLine(JsonConvert.SerializeObject(entity, settings));
 
             EntityManager.CreateEntity(0, entity);
+            EntityManager.CreateEntity(1, textEntity);
         }
 
         public void Run()

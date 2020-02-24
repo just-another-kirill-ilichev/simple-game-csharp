@@ -23,9 +23,15 @@ namespace SimpleGame.Core
             _textureHandle = SDL_image.IMG_LoadTexture(owner.Window.Renderer, path);
 
             if (_textureHandle == IntPtr.Zero)
-            {
-                // TODO
-            }
+                throw new Exception(SDL.SDL_GetError()); // TODO
+        }
+
+        public Texture(SDLApplication owner, Surface surface) : base(owner)
+        {
+            _textureHandle = SDL.SDL_CreateTextureFromSurface(owner.Window.Renderer, surface.Handle);
+
+            if (_textureHandle == IntPtr.Zero)
+                throw new Exception(SDL.SDL_GetError()); // TODO
         }
 
         public void Draw(int x, int y)
