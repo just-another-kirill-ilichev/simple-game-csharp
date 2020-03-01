@@ -5,18 +5,6 @@ using SimpleGame.ECS.Components;
 
 namespace SimpleGame.ECS
 {
-    public static class Extension
-    {
-        public static IEnumerable<int> WithComponent<T>(this IEnumerable<int> entities, EntityManager manager)
-        {
-            if (entities == manager.Entities)
-                return manager.GetComponentsByType<T>().Keys;
-            else
-                return entities.Intersect(manager.GetComponentsByType<T>().Keys);
-        }
-    }
-
-
     public class EntityManager
     {
         public static int InvalidEntityId => -1;
@@ -72,7 +60,7 @@ namespace SimpleGame.ECS
         {
             if (!Entities.Contains(entityId))
                 throw new Exception(); // TODO
-            
+
             foreach (var components in _componentsByType.Values)
             {
                 if (components.ContainsKey(entityId))
@@ -104,7 +92,7 @@ namespace SimpleGame.ECS
         {
             if (!Entities.Contains(entityId))
                 throw new Exception(); // TODO
-            
+
             if (_componentsByType.ContainsKey(typeof(T)))
             {
                 return _componentsByType[typeof(T)].ContainsKey(entityId);
@@ -132,6 +120,24 @@ namespace SimpleGame.ECS
 
             return _componentsByType[typeof(T)];
         }
+
+        public IEnumerable<int> WithComponent<T>()
+        {
+            return GetComponentsByType<T>().Keys;
+        }
+
+        public IEnumerable<int> WithComponent<T1, T2>()
+        {
+            return WithComponent<T1>().Intersect(WithComponent<T2>());
+        }
+
+        public IEnumerable<int> WithComponent<T1, T2, T3>()
+        {
+            return WithComponent<T1>()
+                   .Intersect(WithComponent<T2>())
+                   .Intersect(WithComponent<T3>());
+        }
+
 
         public void Clear()
         {
