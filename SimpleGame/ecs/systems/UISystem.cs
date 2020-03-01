@@ -21,8 +21,8 @@ namespace SimpleGame.ECS.Systems{
             //    .WithComponent<ButtonUI>(OwnerApp.EntityManager)
             //    .ToArray();
 
-            var texts = OwnerApp.EntityManager.Entities
-                .WithComponent<TextUI>(OwnerApp.EntityManager)
+            var texts = OwnerApp.EntityManager
+                .WithComponent<TextUI>()
                 .ToArray();
 
             

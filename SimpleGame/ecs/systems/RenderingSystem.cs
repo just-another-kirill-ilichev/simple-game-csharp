@@ -11,9 +11,8 @@ namespace SimpleGame.ECS.Systems
 
         public override void Redraw()
         {
-            var entities = OwnerApp.EntityManager.Entities
-                .WithComponent<TransformComponent>(OwnerApp.EntityManager)
-                .WithComponent<TextureComponent>(OwnerApp.EntityManager)
+            var entities = OwnerApp.EntityManager
+                .WithComponent<TransformComponent, TextureComponent>()
                 .ToArray();
 
             foreach (int entityId in entities)

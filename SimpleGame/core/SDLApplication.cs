@@ -30,8 +30,8 @@ namespace SimpleGame.Core
             Events.Close += (o, e) => _isRunning = false;
 
             ResourceManager = new ResourceManager(this);
-            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "./resources/brick.jpg");
-            ResourceManager.Add("fontTest24", new Font(this, "./resources/10423.ttf", 24));
+            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "../resources/brick.jpg");
+            ResourceManager.Add("fontTest24", new Font(this, "../resources/10423.ttf", 24));
             SystemManager = new SystemManager();
             SystemManager.Add(new RenderingSystem(this));
             SystemManager.Add(new UISystem(this));
@@ -78,7 +78,7 @@ namespace SimpleGame.Core
 
                 Events.Process();
 
-                // TODO Logic update
+                SystemManager.Update(16); // TODO
 
                 Window.Clear();
                 SystemManager.Redraw();
