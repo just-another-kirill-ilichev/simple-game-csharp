@@ -10,14 +10,13 @@ namespace SimpleGame.ECS
         public static int InvalidEntityId => -1;
 
         private Dictionary<Type, Dictionary<int, Component>> _componentsByType;
-        private List<int> _ids;
 
-        public IEnumerable<int> Entities { get => _ids; }
+        public List<int> Entities { get; }
 
         public EntityManager()
         {
             _componentsByType = new Dictionary<Type, Dictionary<int, Component>>();
-            _ids = new List<int>();
+            Entities = new List<int>();
         }
 
         public void AddComponent(int entityId, Component component)
@@ -48,7 +47,7 @@ namespace SimpleGame.ECS
             if (entityComponents is null)
                 throw new ArgumentNullException(nameof(entityComponents));
 
-            _ids.Add(entityId);
+            Entities.Add(entityId);
 
             foreach (var component in entityComponents)
             {
@@ -142,7 +141,7 @@ namespace SimpleGame.ECS
         public void Clear()
         {
             _componentsByType.Clear();
-            _ids.Clear();
+            Entities.Clear();
         }
     }
 }
