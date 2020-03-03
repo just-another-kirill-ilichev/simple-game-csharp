@@ -58,7 +58,7 @@ namespace SimpleGame.ECS
         public void RemoveEntity(int entityId)
         {
             if (!Entities.Contains(entityId))
-                throw new Exception(); // TODO
+                throw new ArgumentException($"There is no entity with id = {entityId}");
 
             foreach (var components in _componentsByType.Values)
             {
@@ -72,7 +72,7 @@ namespace SimpleGame.ECS
         public IEnumerable<Component> GetEntity(int entityId)
         {
             if (!Entities.Contains(entityId))
-                throw new Exception(); // TODO
+                throw new ArgumentException($"There is no entity with id = {entityId}");
 
             var temp = new List<Component>();
 
@@ -90,7 +90,7 @@ namespace SimpleGame.ECS
         public bool HasComponent<T>(int entityId) where T : Component
         {
             if (!Entities.Contains(entityId))
-                throw new Exception(); // TODO
+                throw new ArgumentException($"There is no entity with id = {entityId}");
 
             if (_componentsByType.ContainsKey(typeof(T)))
             {
@@ -106,7 +106,7 @@ namespace SimpleGame.ECS
         {
             if (!HasComponent<T>(entityId))
             {
-                throw new Exception(); // TODO
+                throw new ArgumentException($"Entity with id = {entityId} doesnt have component with type = {typeof(T)}");
             }
 
             return _componentsByType[typeof(T)][entityId] as T;
@@ -115,7 +115,7 @@ namespace SimpleGame.ECS
         public Dictionary<int, Component> GetComponentsByType<T>()
         {
             if (!_componentsByType.ContainsKey(typeof(T)))
-                throw new Exception(); // TODO
+                throw new ArgumentException("Invalid component type");
 
             return _componentsByType[typeof(T)];
         }

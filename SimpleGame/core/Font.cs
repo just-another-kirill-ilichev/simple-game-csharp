@@ -14,7 +14,7 @@ namespace SimpleGame.Core
 
             if (_fontHandle == IntPtr.Zero)
             {
-                throw new Exception(SDL.SDL_GetError()); // TODO
+                throw new SDLException();
             }
         }
 
@@ -39,7 +39,7 @@ namespace SimpleGame.Core
             var code = SDL_ttf.TTF_SizeUNICODE(_fontHandle, text, out int w, out int h);
 
             if (code != 0)
-                throw new Exception(SDL.SDL_GetError()); // TODO
+                throw new SDLException();
 
             return new Size(w, h);
         }
