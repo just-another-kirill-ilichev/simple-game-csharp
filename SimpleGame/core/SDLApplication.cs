@@ -12,6 +12,7 @@ namespace SimpleGame.Core
         public ResourceManager ResourceManager { get; }
         public EntityManager EntityManager { get; }
         public SystemManager SystemManager { get; }
+        public SceneLoader SceneLoader { get; }
 
         public SDLApplication()
         {
@@ -24,14 +25,12 @@ namespace SimpleGame.Core
             Window = new Window("test", 800, 600);
             Events.Close += (o, e) => _isRunning = false;
 
-            ResourceManager = new ResourceManager(this);
-            ResourceManager.Load("tBrick", "SimpleGame.Core.Texture", "../resources/brick.jpg");
-            ResourceManager.Add("fontTest24", new Font(this, "../resources/10423.ttf", 24));
+            ResourceManager = new ResourceManager();
             SystemManager = new SystemManager();
             EntityManager = new EntityManager();
+            SceneLoader = new SceneLoader(this);
 
-            var sceneLoader = new SceneLoader();
-            sceneLoader.LoadScene(this, "../resources/test.json");
+            SceneLoader.LoadScene("../resources/test.json");
         }
 
         public void Run()
