@@ -24,9 +24,9 @@ namespace SimpleGame.Core
 
     public class SceneLoader
     {
-        public SDLApplication OwnerApp { get; }
+        public Application OwnerApp { get; }
 
-        public SceneLoader(SDLApplication owner)
+        public SceneLoader(Application owner)
         {
             OwnerApp = owner;
         }

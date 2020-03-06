@@ -4,9 +4,9 @@ namespace SimpleGame.ECS.Systems
 {
     public abstract class SystemBase
     {
-        public SDLApplication OwnerApp;
+        public Application OwnerApp;
 
-        public SystemBase(SDLApplication owner)
+        public SystemBase(Application owner)
         {
             OwnerApp = owner;
         }

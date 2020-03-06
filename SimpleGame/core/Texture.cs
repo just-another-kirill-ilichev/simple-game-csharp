@@ -1,10 +1,9 @@
-using SDL2;
 using System;
 using System.Drawing;
 
 namespace SimpleGame.Core
 {
-    public class Texture : Resource
+    /*public class Texture : Resource
     {
         private IntPtr _textureHandle;
 
@@ -23,7 +22,7 @@ namespace SimpleGame.Core
             _textureHandle = SDL_image.IMG_LoadTexture(owner.Window.Renderer, path);
 
             if (_textureHandle == IntPtr.Zero)
-                throw new SDLException();
+                throw new GLException();
         }
 
         public Texture(SDLApplication owner, Surface surface) : base(owner)
@@ -31,7 +30,7 @@ namespace SimpleGame.Core
             _textureHandle = SDL.SDL_CreateTextureFromSurface(owner.Window.Renderer, surface.Handle);
 
             if (_textureHandle == IntPtr.Zero)
-                throw new SDLException();
+                throw new GLException();
         }
 
         public void Draw(int x, int y)
@@ -123,5 +122,5 @@ namespace SimpleGame.Core
         {
             SDL.SDL_DestroyTexture(_textureHandle);
         }
-    }
+    }*/
 }

@@ -5,9 +5,9 @@ namespace SimpleGame.Core
     public abstract class Resource : IDisposable
     {
         private bool _disposed;
-        public SDLApplication OwnerApp { get; }
+        public Application OwnerApp { get; }
 
-        public Resource(SDLApplication owner)
+        public Resource(Application owner)
         {
             OwnerApp = owner;
         }

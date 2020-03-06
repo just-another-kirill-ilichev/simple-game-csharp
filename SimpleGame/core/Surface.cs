@@ -1,11 +1,10 @@
 using System;
 using System.Drawing;
 
-using SDL2;
 
 namespace SimpleGame.Core
 {
-    public class Surface : Resource
+    /*public class Surface : Resource
     {
         private IntPtr _surfaceHandle;
 
@@ -25,5 +24,5 @@ namespace SimpleGame.Core
         {
             SDL.SDL_FreeSurface(_surfaceHandle);
         }
-    }
+    }*/
 }
