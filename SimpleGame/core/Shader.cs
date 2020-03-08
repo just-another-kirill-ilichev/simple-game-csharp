@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
 using OpenTK.Graphics.OpenGL4;
 
@@ -8,25 +10,36 @@ namespace SimpleGame.Core
     {
         private int _program;
 
-        public Shader(Application owner, string fragmentPath, string vertexPath) : base(owner)
-        {
-            var vertexShader = CompileShader(ShaderType.VertexShader, vertexPath);
-            var fragmentShader = CompileShader(ShaderType.FragmentShader, fragmentPath);
+        public Shader(string fragmentPath, string vertexPath) : 
+            this(new List<(ShaderType type, string path)>() {
+                    (ShaderType.FragmentShader, fragmentPath), (ShaderType.VertexShader, vertexPath)
+                })
+        {}
 
+        public Shader(IEnumerable<(ShaderType type, string path)> shaders)
+        {
             _program = GL.CreateProgram();
-            GL.AttachShader(_program, vertexShader);
-            GL.AttachShader(_program, fragmentShader);
+
+            var compiledShaders = shaders.Select(x => CompileShader(x.type, x.path));
+
+            foreach (var shader in compiledShaders)
+            {
+                GL.AttachShader(_program, shader);
+            }
+
             GL.LinkProgram(_program);
 
-            GL.DeleteShader(vertexShader);
-            GL.DeleteShader(fragmentShader);
-
-            int status;
-            GL.GetProgram(_program, GetProgramParameterName.LinkStatus, out status);
-
-            if (status == 0)
+            foreach (var shader in compiledShaders)
             {
-                throw new GameException (GL.GetProgramInfoLog(_program));
+                GL.DetachShader(_program, shader);
+                GL.DeleteShader(shader);
+            }
+
+            GL.GetProgram(_program, GetProgramParameterName.LinkStatus, out int status);
+
+            if (status == 0) // GL_FALSE
+            {
+                throw new GameException(GL.GetProgramInfoLog(_program));
             }
         }
 
@@ -47,6 +60,12 @@ namespace SimpleGame.Core
 
             return shader;
         }
+
+        public int GetUniformLocaltion(string name) =>
+            GL.GetUniformLocation(_program, name);
+
+        public int GetAttributeLocation(string name) =>
+            GL.GetAttribLocation(_program, name);
 
         public void Use()
         {
