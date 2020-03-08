@@ -4,13 +4,7 @@ namespace SimpleGame.Core
 {
     public abstract class Resource : IDisposable
     {
-        private bool _disposed;
-        public Application OwnerApp { get; }
-
-        public Resource(Application owner)
-        {
-            OwnerApp = owner;
-        }
+        private bool _disposed = false;
 
         protected void CheckDisposed(string objectName)
         {
