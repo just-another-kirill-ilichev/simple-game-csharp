@@ -87,6 +87,14 @@ namespace SimpleGame.ECS
             return temp;
         }
 
+        public IEnumerable<Component> GetEntity(string name)
+        {
+            var entity = GetComponentsByType<NameComponent>()
+                         .First(x => (x.Value as NameComponent)?.Name == name).Key;
+
+            return GetEntity(entity);
+        }
+
         public bool HasComponent<T>(int entityId) where T : Component
         {
             if (!Entities.Contains(entityId))
