@@ -1,10 +1,10 @@
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.ES30;
 
 namespace SimpleGame.Core
 {
     public class GLException : GameException
     {
-        public GLException() : base("OpenGl error: " + GL.GetError())
+        public GLException() : base("OpenGL error: " + GL.GetError())
         {
 
         }
