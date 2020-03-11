@@ -40,6 +40,7 @@ namespace SimpleGame.Core
 
             var background = new Color4(0, 0, 0, 0);
             GL.ClearColor(background);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             SystemManager.Redraw();
 
