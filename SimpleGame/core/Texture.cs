@@ -14,7 +14,7 @@ namespace SimpleGame.Core
 
             _texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, _texture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.Float, data);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
             
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
@@ -23,25 +23,25 @@ namespace SimpleGame.Core
                 new int[] { (int)TextureMinFilter.Linear });
         }
 
-        private float[] LoadTexture(string filename, out int width, out int height)
+        private byte[] LoadTexture(string filename, out int width, out int height)
         {
-            float[] r;
+            byte[] r;
 
             using (var bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(filename))
             {
                 width = bmp.Width;
                 height = bmp.Height;
-                r = new float[width * height * 4];
+                r = new byte[width * height * 4];
                 int index = 0;
                 for (int y = 0; y < height; y++)
                 {
                     for (int x = 0; x < width; x++)
                     {
                         var pixel = bmp.GetPixel(x, y);
-                        r[index++] = pixel.R / 255f;
-                        r[index++] = pixel.G / 255f;
-                        r[index++] = pixel.B / 255f;
-                        r[index++] = pixel.A / 255f;
+                        r[index++] = pixel.R;
+                        r[index++] = pixel.G;
+                        r[index++] = pixel.B;
+                        r[index++] = pixel.A;
                     }
                 }
             }
