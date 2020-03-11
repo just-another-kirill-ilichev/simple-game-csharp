@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using SimpleGame.ECS.Components;
 using SimpleGame.ECS.Systems;
+using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core
 {

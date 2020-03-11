@@ -2,7 +2,7 @@ using System;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
-namespace SimpleGame.Core
+namespace SimpleGame.Core.Resources
 {
     public struct TexturedVertex
     {
@@ -17,11 +17,13 @@ namespace SimpleGame.Core
             _uv = uv;
         }
     }
-    public class TexturedRenderObject : Renderable
-    {
-        private Texture _texture;
 
-        public TexturedRenderObject(TexturedVertex[] vertices, Shader shader, string texturePath) : base(shader, vertices.Length)
+    public class TexturedRenderObject : MeshBase
+    {
+        private readonly int _verticesCount;
+        private readonly Texture _texture;
+
+        public TexturedRenderObject(TexturedVertex[] vertices, string texturePath)
         {
             GL.NamedBufferStorage(_buffer, TexturedVertex.Size * vertices.Length, vertices, BufferStorageFlags.MapWriteBit);
 
@@ -35,29 +37,24 @@ namespace SimpleGame.Core
 
             GL.VertexArrayVertexBuffer(_vertexArray, 0, _buffer, IntPtr.Zero, TexturedVertex.Size);
 
+            _verticesCount = vertices.Length;
             _texture = new Texture(texturePath);
         }
 
-        public override void Bind()
+        public virtual void Render(Shader shader, Matrix4 transform, Matrix4 camera)
         {
-            base.Bind();
+            shader.Use();
+            GL.UniformMatrix4(20, false, ref camera);
+            GL.UniformMatrix4(21, false, ref transform);
             _texture.Bind();
+
+            GL.BindVertexArray(_vertexArray);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _verticesCount);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void FreeManaged()
         {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _texture.Dispose();
-            }
-
-            GL.DeleteVertexArray(_vertexArray);
-            GL.DeleteBuffer(_buffer);
-            
-            _disposed = true;
+            _texture.Dispose();
         }
     }
 }

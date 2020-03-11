@@ -4,7 +4,7 @@ using System.IO;
 using OpenTK.Graphics.OpenGL4;
 
 
-namespace SimpleGame.Core
+namespace SimpleGame.Core.Resources
 {
     public class Shader : Resource
     {
@@ -16,7 +16,7 @@ namespace SimpleGame.Core
                 })
         {}
 
-        public Shader(IEnumerable<(ShaderType type, string path)> shaders)
+        private Shader(IEnumerable<(ShaderType type, string path)> shaders)
         {
             _program = GL.CreateProgram();
 

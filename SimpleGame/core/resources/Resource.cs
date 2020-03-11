@@ -1,6 +1,6 @@
 using System;
 
-namespace SimpleGame.Core
+namespace SimpleGame.Core.Resources
 {
     public abstract class Resource : IDisposable
     {

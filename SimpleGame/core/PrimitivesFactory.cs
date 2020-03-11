@@ -1,5 +1,6 @@
 using OpenTK;
 using OpenTK.Graphics;
+using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core
 {

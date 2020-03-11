@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 
-namespace SimpleGame.Core
+namespace SimpleGame.Core.Resources
 {
     public class Texture : Resource
     {
