@@ -44,20 +44,25 @@ namespace SimpleGame.Core
                 content = file.ReadToEnd();
             }
 
-            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+            };
+
             var sceneData = JsonConvert.DeserializeObject(content, typeof(SceneData), settings) as SceneData;
 
             // TODO use custom factories instead of using Activator.CreateInstance()
+
+            foreach (var resourceData in sceneData.Resources)
+            {
+                LoadResource(resourceData);
+            }
 
             foreach (var systemName in sceneData.Systems)
             {
                 var system = Activator.CreateInstance(Type.GetType(systemName), OwnerApp) as SystemBase;
                 OwnerApp.SystemManager.Add(system);
-            }
-
-            foreach (var resourceData in sceneData.Resources)
-            {
-                LoadResource(resourceData);
             }
 
             int id = 0; // TODO store id in json?
@@ -68,22 +73,18 @@ namespace SimpleGame.Core
             }
         }
 
+        private void LoadDefaultResources()
+        {
+            // OwnerApp.ResourceManager.Add("meshPlane");
+        }
+
         private void LoadResource(ResourceData data)
         {
             var type = Type.GetType(data.Type);
-            var temp = new object[] { OwnerApp }.Concat(data.Args).ToArray();
-            var args = new object[temp.Length];
 
-            // NewtonsodtJson parses numbers as Int64
+            // NewtonsoftJson parses all numbers as Int64
             // to prevent cast exceptions convert it to Int32
-            for (int i = 0; i < temp.Length; i++)
-            {
-                if (temp[i] is long)
-                    args[i] = Convert.ToInt32(temp[i]);
-                else
-                    args[i] = temp[i];
-            }
-
+            var args = data.Args.Select(x => x is long ? Convert.ToInt32(x) : x).ToArray();
             var resource = Activator.CreateInstance(type, args) as Resource;
 
             OwnerApp.ResourceManager.Add(data.Name, resource);
