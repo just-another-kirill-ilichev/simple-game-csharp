@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using SimpleGame.ECS.Components;
 
 namespace SimpleGame.ECS
@@ -120,10 +121,10 @@ namespace SimpleGame.ECS
             return _componentsByType[typeof(T)][entityId] as T;
         }
 
-        public Dictionary<int, Component> GetComponentsByType<T>()
+        public IReadOnlyDictionary<int, Component> GetComponentsByType<T>()
         {
             if (!_componentsByType.ContainsKey(typeof(T)))
-                throw new ArgumentException("Invalid component type");
+                return ImmutableDictionary.Create<int, Component>();
 
             return _componentsByType[typeof(T)];
         }
