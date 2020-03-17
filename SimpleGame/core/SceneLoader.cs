@@ -48,7 +48,7 @@ namespace SimpleGame.Core
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
             };
 
             var sceneData = JsonConvert.DeserializeObject(content, typeof(SceneData), settings) as SceneData;
@@ -60,17 +60,17 @@ namespace SimpleGame.Core
                 LoadResource(resourceData);
             }
 
-            foreach (var systemName in sceneData.Systems)
-            {
-                var system = Activator.CreateInstance(Type.GetType(systemName), OwnerApp) as SystemBase;
-                OwnerApp.SystemManager.Add(system);
-            }
-
             int id = 0; // TODO store id in json?
 
             foreach (var entity in sceneData.Entities)
             {
                 OwnerApp.EntityManager.CreateEntity(id++, entity); // TODO id
+            }
+
+            foreach (var systemName in sceneData.Systems)
+            {
+                var system = Activator.CreateInstance(Type.GetType(systemName), OwnerApp) as SystemBase;
+                OwnerApp.SystemManager.Add(system);
             }
         }
 
