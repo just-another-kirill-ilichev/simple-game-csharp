@@ -12,6 +12,6 @@ namespace SimpleGame.ECS.Systems
         }
 
         public virtual void Redraw() {}
-        public virtual  void Update(uint deltaMs) {}
+        public virtual void Update(uint ms) {}
     }
 }
