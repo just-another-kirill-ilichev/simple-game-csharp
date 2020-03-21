@@ -1,7 +1,8 @@
 using System;
+using NLog;
 using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.ES30;
 using SimpleGame.ECS;
 
 namespace SimpleGame.Core
@@ -13,6 +14,8 @@ namespace SimpleGame.Core
         public SystemManager SystemManager { get; }
         public SceneLoader SceneLoader { get; }
 
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
         public Application() : base(800, 600,
             GraphicsMode.Default,
             "loading...",
@@ -21,7 +24,10 @@ namespace SimpleGame.Core
             3, 3,
             GraphicsContextFlags.Default)
         {
-            GL.GetString(StringName.Version); // TODO log gl version
+            _logger.Info($"Vendor: {GL.GetString(StringName.Vendor)}");
+            _logger.Info($"Renderer: {GL.GetString(StringName.Renderer)}");
+            _logger.Info($"OpenGL version: {GL.GetString(StringName.Version)}");
+            _logger.Info($"GLSL version: {GL.GetString(StringName.ShadingLanguageVersion)}");
 
             ResourceManager = new ResourceManager();
             SystemManager = new SystemManager();
@@ -31,7 +37,7 @@ namespace SimpleGame.Core
 
         protected override void OnLoad(EventArgs e)
         {
-            SceneLoader.LoadScene("../resources/test.json");         
+            SceneLoader.LoadScene("../resources/test.json");
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
