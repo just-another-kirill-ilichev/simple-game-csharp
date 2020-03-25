@@ -38,6 +38,8 @@ namespace SimpleGame.Core
         protected override void OnLoad(EventArgs e)
         {
             SceneLoader.LoadScene("../resources/test.json");
+
+            base.OnLoad(e);
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -51,11 +53,24 @@ namespace SimpleGame.Core
             SystemManager.Redraw();
 
             SwapBuffers();
+
+            base.OnRenderFrame(e);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             SystemManager.Update((uint)(e.Time * 1000));
+            
+            base.OnUpdateFrame(e);
+        }
+
+        protected override void OnUnload(EventArgs e)
+        {
+            ResourceManager.Clear();
+            SystemManager.Clear();
+            EntityManager.Clear();
+
+            base.OnUnload(e);
         }
     }
 }
