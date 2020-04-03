@@ -1,3 +1,4 @@
+using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 
 namespace SimpleGame.Core.Resources
@@ -6,36 +7,39 @@ namespace SimpleGame.Core.Resources
     {
         private int _texture;
 
+        public Size Size { get; private set; }
+        public int Width => this.Size.Width;
+        public int Height => this.Size.Height;
+
+
         public Texture(string texturePath)
         {
-            int width, height;
-
-            var data = LoadTexture(texturePath, out width, out height);
+            var data = LoadTexture(texturePath);
 
             _texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, _texture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
             
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 new int[] { (int)TextureMinFilter.LinearMipmapLinear });
             GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                new int[] { (int)TextureMinFilter.Linear });
+                new int[] { (int)TextureMagFilter.Nearest });
         }
 
-        private byte[] LoadTexture(string filename, out int width, out int height)
+        private byte[] LoadTexture(string filename)
         {
             byte[] r;
 
             using (var bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(filename))
             {
-                width = bmp.Width;
-                height = bmp.Height;
-                r = new byte[width * height * 4];
+                this.Size = bmp.Size;
+                
+                r = new byte[Width * Height * 4];
                 int index = 0;
-                for (int y = 0; y < height; y++)
+                for (int y = 0; y < Height; y++)
                 {
-                    for (int x = 0; x < width; x++)
+                    for (int x = 0; x < Width; x++)
                     {
                         var pixel = bmp.GetPixel(x, y);
                         r[index++] = pixel.R;
