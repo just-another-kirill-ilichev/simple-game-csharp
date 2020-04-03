@@ -37,7 +37,17 @@ namespace SimpleGame.Core
 
         protected override void OnLoad(EventArgs e)
         {
-            SceneLoader.LoadScene("../resources/test.json");
+            string path = "../resources/test.json"; // TODO
+
+            try
+            {
+                SceneLoader.LoadScene(path);
+            }
+            catch (Exception ex) // TODO
+            {
+                _logger.Error(ex, "An exception occurred while loading scene from {0}", path);
+            }
+            
 
             base.OnLoad(e);
         }
