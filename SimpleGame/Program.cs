@@ -1,6 +1,4 @@
-﻿using System;
-
-using SimpleGame.Core;
+﻿using SimpleGame.Core;
 
 namespace SimpleGame
 {
@@ -8,9 +6,7 @@ namespace SimpleGame
     {
         static void Main(string[] args)
         {
-            var app = new SDLApplication();
-            app.Run();
-            app.Dispose();
+            new Application().Run();
         }
     }
 }

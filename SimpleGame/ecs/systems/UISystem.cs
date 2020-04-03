@@ -11,7 +11,7 @@ namespace SimpleGame.ECS.Systems
     {
         private Dictionary<int, string> _renderedFontTextureCache;
 
-        public UISystem(SDLApplication owner) : base(owner)
+        public UISystem(Application owner) : base(owner)
         {
             _renderedFontTextureCache = new Dictionary<int, string>();
         }
@@ -20,24 +20,24 @@ namespace SimpleGame.ECS.Systems
         {
             var component = OwnerApp.EntityManager.GetComponent<TextUI>(entity);
             var position = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
-            var font = OwnerApp.ResourceManager.Get<Font>(component.FontResourceRef);
+            //var font = OwnerApp.ResourceManager.Get<Font>(component.FontResourceRef);
 
-            using (var surf = font.Print(component.Text, component.TextColor))
+            /*using (var surf = font.Print(component.Text, component.TextColor))
             {
-                var texture = new Texture(OwnerApp, surf);
+                //var texture = new Texture(OwnerApp, surf);
 
                 if (_renderedFontTextureCache.ContainsKey(entity))
                 {
-                    var res = OwnerApp.ResourceManager.Get<Texture>(_renderedFontTextureCache[entity]);
-                    res.Dispose();
-                    res = texture;
+                    //var res = OwnerApp.ResourceManager.Get<Texture>(_renderedFontTextureCache[entity]);
+                    //res.Dispose();
+                    //res = texture;
                 }
                 else
                 {
                     _renderedFontTextureCache[entity] = "textureCache" + entity.ToString();
                     OwnerApp.ResourceManager.Add(_renderedFontTextureCache[entity], texture);
                 }
-            }
+            }*/
         }
 
         public override void Redraw()
@@ -57,7 +57,7 @@ namespace SimpleGame.ECS.Systems
                 var position = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
 
 
-                var font = OwnerApp.ResourceManager.Get<Font>(component.FontResourceRef);
+                /*var font = OwnerApp.ResourceManager.Get<Font>(component.FontResourceRef);
 
                 if (_renderedFontTextureCache.ContainsKey(entity))
                 {
@@ -66,7 +66,7 @@ namespace SimpleGame.ECS.Systems
                 else
                 {
                     UpdateRenderedFontTextureCache(entity);
-                }
+                }*/
             }
         }
     }

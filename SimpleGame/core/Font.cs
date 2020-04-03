@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
-using SDL2;
 
 namespace SimpleGame.Core
 {
-    public class Font : Resource
+   /* public class Font : Resource
     {
         private IntPtr _fontHandle;
 
@@ -14,7 +13,7 @@ namespace SimpleGame.Core
 
             if (_fontHandle == IntPtr.Zero)
             {
-                throw new SDLException();
+                throw new GLException();
             }
         }
 
@@ -39,7 +38,7 @@ namespace SimpleGame.Core
             var code = SDL_ttf.TTF_SizeUNICODE(_fontHandle, text, out int w, out int h);
 
             if (code != 0)
-                throw new SDLException();
+                throw new GLException();
 
             return new Size(w, h);
         }
@@ -48,5 +47,5 @@ namespace SimpleGame.Core
         {
             SDL_ttf.TTF_CloseFont(_fontHandle);
         }
-    }
+    }*/
 }

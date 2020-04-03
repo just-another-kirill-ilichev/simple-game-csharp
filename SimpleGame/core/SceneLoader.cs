@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using SimpleGame.ECS.Components;
 using SimpleGame.ECS.Systems;
+using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core
 {
@@ -24,9 +25,9 @@ namespace SimpleGame.Core
 
     public class SceneLoader
     {
-        public SDLApplication OwnerApp { get; }
+        public Application OwnerApp { get; }
 
-        public SceneLoader(SDLApplication owner)
+        public SceneLoader(Application owner)
         {
             OwnerApp = owner;
         }
@@ -44,16 +45,15 @@ namespace SimpleGame.Core
                 content = file.ReadToEnd();
             }
 
-            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects };
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            };
+
             var sceneData = JsonConvert.DeserializeObject(content, typeof(SceneData), settings) as SceneData;
 
             // TODO use custom factories instead of using Activator.CreateInstance()
-
-            foreach (var systemName in sceneData.Systems)
-            {
-                var system = Activator.CreateInstance(Type.GetType(systemName), OwnerApp) as SystemBase;
-                OwnerApp.SystemManager.Add(system);
-            }
 
             foreach (var resourceData in sceneData.Resources)
             {
@@ -66,24 +66,26 @@ namespace SimpleGame.Core
             {
                 OwnerApp.EntityManager.CreateEntity(id++, entity); // TODO id
             }
+
+            foreach (var systemName in sceneData.Systems)
+            {
+                var system = Activator.CreateInstance(Type.GetType(systemName), OwnerApp) as SystemBase;
+                OwnerApp.SystemManager.Add(system);
+            }
+        }
+
+        private void LoadDefaultResources()
+        {
+            // OwnerApp.ResourceManager.Add("meshPlane");
         }
 
         private void LoadResource(ResourceData data)
         {
             var type = Type.GetType(data.Type);
-            var temp = new object[] { OwnerApp }.Concat(data.Args).ToArray();
-            var args = new object[temp.Length];
 
-            // NewtonsodtJson parses numbers as Int64
+            // NewtonsoftJson parses all numbers as Int64
             // to prevent cast exceptions convert it to Int32
-            for (int i = 0; i < temp.Length; i++)
-            {
-                if (temp[i] is long)
-                    args[i] = Convert.ToInt32(temp[i]);
-                else
-                    args[i] = temp[i];
-            }
-
+            var args = data.Args.Select(x => x is long ? Convert.ToInt32(x) : x).ToArray();
             var resource = Activator.CreateInstance(type, args) as Resource;
 
             OwnerApp.ResourceManager.Add(data.Name, resource);

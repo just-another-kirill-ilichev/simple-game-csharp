@@ -1,16 +1,10 @@
 using System;
 
-namespace SimpleGame.Core
+namespace SimpleGame.Core.Resources
 {
     public abstract class Resource : IDisposable
     {
-        private bool _disposed;
-        public SDLApplication OwnerApp { get; }
-
-        public Resource(SDLApplication owner)
-        {
-            OwnerApp = owner;
-        }
+        private bool _disposed = false;
 
         protected void CheckDisposed(string objectName)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core
 {
