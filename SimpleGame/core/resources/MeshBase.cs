@@ -10,8 +10,11 @@ namespace SimpleGame.Core.Resources
         public MeshBase()
         {
             _vertexArray = GL.GenVertexArray();
-            _buffer = GL.GenBuffer();
+            _buffer = GL.GenBuffer();            
+        }
 
+        protected virtual void SetupBuffers(object[] data)
+        {
             GL.BindVertexArray(_vertexArray);
             GL.BindBuffer(BufferTarget.ArrayBuffer, _buffer);
         }

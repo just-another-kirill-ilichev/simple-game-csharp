@@ -1,7 +1,4 @@
-using System;
 using System.Linq;
-using System.Drawing;
-using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SimpleGame.Core;
@@ -12,48 +9,50 @@ namespace SimpleGame.ECS.Systems
 {
     public class RenderingSystem : SystemBase
     {
-        private List<TexturedRenderObject> _renderObjects = new List<TexturedRenderObject>();
+        private Model _cube;
 
         public RenderingSystem(Application owner) : base(owner)
         {
             // TODO dispose
-            _renderObjects.Add(new TexturedRenderObject(PrimitivesFactory.CreateTexturedCube(0.2f, 256, 256), "../resources/dotted.png"));
+            _cube = OwnerApp.ResourceManager.Get<Model>("modelCube");//new Sprite("../resources/dotted.png");//
+            //_cube = new TexturedRenderObject(MeshesFactory.CreateTexturedCube(2f), "../resources/dotted.png");
 
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Fill);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Enable(EnableCap.DepthTest);
+        }
+
+        private Matrix4 CreateProjectionViewMatrix()
+        {
+            var camera = OwnerApp.EntityManager.WithComponent<ThirdPersonCameraComponent>().First();
+
+            var characterTransform = OwnerApp.EntityManager.GetComponent<TransformComponent>(camera);
+            var cameraSettings = OwnerApp.EntityManager.GetComponent<ThirdPersonCameraComponent>(camera);
+
+            var characterPosition = new Vector3(characterTransform.X, characterTransform.Y, characterTransform.Z);
+            var cameraOffset = new Vector3(cameraSettings.OffsetX, cameraSettings.OffsetY, cameraSettings.OffsetZ);
+
+            var viewMatrix = Matrix4.LookAt(characterPosition + cameraOffset, characterPosition, Vector3.UnitY);
+
+            var projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                cameraSettings.FieldOfView, 800 / 600, 0.1f, 4000f);
+
+            var projectionView = viewMatrix * projectionMatrix; // TODO?: Weird multiplication order
+
+            return projectionView;
         }
 
         public override void Redraw()
         {
-            /*var entities = OwnerApp.EntityManager
-                .WithComponent<TransformComponent, TextureComponent>()
-                .ToArray();
-
-            //Primitives.DrawIsometricCube(OwnerApp.Window, Color.Red, new Point(600, 50), 30);
-
-
-            foreach (int entityId in entities)
-            {
-                var transform = OwnerApp.EntityManager.GetComponent<TransformComponent>(entityId);
-                var texture = OwnerApp.EntityManager.GetComponent<TextureComponent>(entityId);
-
-                //OwnerApp.ResourceManager.Get<Texture>(texture.TextureResourceName).Draw((int)transform.X, (int)transform.Y, 100, 86, 45);
-            }
-            */
-            var _projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                60*((float) Math.PI/180f), // field of view angle, in radians
-                800 / 600,                // current window aspect ratio
-                0.1f,                       // near plane
-                4000f);   
-
+            var shader = OwnerApp.ResourceManager.Get<Shader>("shaderModelTest");
+            var entities = OwnerApp.EntityManager.WithComponent<SimpleCubeComponent>();
             
-            var shader = OwnerApp.ResourceManager.Get<Shader>("shaderDefault");
+            var projectionView = CreateProjectionViewMatrix();
 
-            var transform = OwnerApp.EntityManager.GetComponentsByType<TransformComponent>()[0] as TransformComponent;          
-           
-            foreach (var obj in _renderObjects)
+            foreach (var entity in entities)
             {
-                obj.Render(shader, transform.Transform, _projectionMatrix);
+                var transform = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
+
+                _cube.Render(shader, transform.Transform, projectionView);
             }
         }
     }

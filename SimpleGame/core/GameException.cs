@@ -14,7 +14,7 @@ namespace SimpleGame.Core
 
         }
 
-        public GameException(String message, Exception inner) : base(message, inner)
+        public GameException(string message, Exception inner) : base(message, inner)
         {
             
         }
