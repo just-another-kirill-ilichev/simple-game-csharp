@@ -16,7 +16,7 @@ namespace SimpleGame.ECS.Systems
         public PhysicsSystem(Application app) : base(app)
         {
             _world = new World(new CollisionSystemPersistentSAP());
-            _world.Gravity = JVector.Zero;
+            _world.Gravity = new JVector(0.0f, -0.9f, 0.0f);
             _world.AllowDeactivation = true;
 
             var entities = OwnerApp.EntityManager.WithComponent<RigidBodyComponent, TransformComponent>();
