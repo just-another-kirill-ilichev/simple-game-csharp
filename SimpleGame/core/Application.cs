@@ -4,6 +4,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using SimpleGame.ECS;
+using SimpleGame.Core.Loaders;
 
 namespace SimpleGame.Core
 {
