@@ -6,11 +6,11 @@ namespace SimpleGame.Core.Resources
     {
         private bool _disposed = false;
 
-        protected void CheckDisposed(string objectName)
+        protected void CheckDisposed()
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException(objectName);
+                throw new ObjectDisposedException(GetType().Name);
             }
         }
 

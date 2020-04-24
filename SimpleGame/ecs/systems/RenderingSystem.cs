@@ -13,9 +13,8 @@ namespace SimpleGame.ECS.Systems
 
         public RenderingSystem(Application owner) : base(owner)
         {
-            // TODO dispose
             _cube = OwnerApp.ResourceManager.Get<Model>("modelCube");//new Sprite("../resources/dotted.png");//
-            //_cube = new TexturedRenderObject(MeshesFactory.CreateTexturedCube(2f), "../resources/dotted.png");
+            
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Enable(EnableCap.DepthTest);

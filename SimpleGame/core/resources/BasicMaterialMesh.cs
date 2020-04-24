@@ -39,6 +39,7 @@ namespace SimpleGame.Core.Resources
 
         public virtual void Render(Shader shader, Matrix4 modelTransform, Matrix4 projectionViewTransform)
         {
+            CheckDisposed();
             shader.Use();
 
             GL.UniformMatrix4(20, false, ref projectionViewTransform);

@@ -10,11 +10,11 @@ namespace SimpleGame.Core.Resources
     {
         private int _program;
 
-        public Shader(string fragmentPath, string vertexPath) : 
+        public Shader(string fragmentPath, string vertexPath) :
             this(new List<(ShaderType type, string path)>() {
                     (ShaderType.FragmentShader, fragmentPath), (ShaderType.VertexShader, vertexPath)
                 })
-        {}
+        { }
 
         private Shader(IEnumerable<(ShaderType type, string path)> shaders)
         {
@@ -53,7 +53,7 @@ namespace SimpleGame.Core.Resources
             int status;
             GL.GetShader(shader, ShaderParameter.CompileStatus, out status);
 
-            if (status == 0)
+            if (status == 0 /* GL_FALSE */)
             {
                 throw new GameException(GL.GetShaderInfoLog(shader));
             }
@@ -61,14 +61,23 @@ namespace SimpleGame.Core.Resources
             return shader;
         }
 
-        public int GetUniformLocaltion(string name) =>
-            GL.GetUniformLocation(_program, name);
+        public int GetUniformLocaltion(string name)
+        {
+            CheckDisposed();
+            return GL.GetUniformLocation(_program, name);
+        }
 
-        public int GetAttributeLocation(string name) =>
-            GL.GetAttribLocation(_program, name);
+
+        public int GetAttributeLocation(string name)
+        {
+            CheckDisposed();
+            return GL.GetAttribLocation(_program, name);
+        }
+
 
         public void Use()
         {
+            CheckDisposed();
             GL.UseProgram(_program);
         }
 

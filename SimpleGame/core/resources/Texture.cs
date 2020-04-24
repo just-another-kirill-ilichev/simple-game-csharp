@@ -6,8 +6,13 @@ namespace SimpleGame.Core.Resources
     public class Texture : Resource
     {
         private int _texture;
+        private Size _size;
 
-        public Size Size { get; private set; }
+        public Size Size { 
+            get { CheckDisposed(); return _size; }
+            private set { CheckDisposed(); _size = value; }
+        }
+
         public int Width => this.Size.Width;
         public int Height => this.Size.Height;
 
@@ -19,7 +24,7 @@ namespace SimpleGame.Core.Resources
             _texture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, _texture);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-            
+
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             GL.TexParameterI(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                 new int[] { (int)TextureMinFilter.LinearMipmapLinear });
@@ -34,7 +39,7 @@ namespace SimpleGame.Core.Resources
             using (var bmp = (System.Drawing.Bitmap)System.Drawing.Image.FromFile(filename))
             {
                 this.Size = bmp.Size;
-                
+
                 r = new byte[Width * Height * 4];
                 int index = 0;
                 for (int y = 0; y < Height; y++)
@@ -54,6 +59,7 @@ namespace SimpleGame.Core.Resources
 
         public void Bind()
         {
+            CheckDisposed();
             GL.BindTexture(TextureTarget.Texture2D, _texture);
         }
 
