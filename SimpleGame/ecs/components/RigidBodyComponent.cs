@@ -17,5 +17,14 @@ namespace SimpleGame.ECS.Components
         {
             Body = new Jitter.Dynamics.RigidBody(new BoxShape(0.0f, 0.0f, 0.0f));
         }
+
+        public override object Clone() =>
+            new RigidBodyComponent()
+            {
+                Mass = Mass,
+                Restitution = Restitution,
+                StaticFriction = StaticFriction,
+                KineticFriction = KineticFriction
+            };
     }
 }

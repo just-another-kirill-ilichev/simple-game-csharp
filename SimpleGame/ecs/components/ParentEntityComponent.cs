@@ -1,6 +1,6 @@
 namespace SimpleGame.ECS.Components
 {
-    public class ParentEntityComponent : Component
+    public sealed class ParentEntityComponent : Component
     {
         public int ParentEntityId { get; set; }
 
@@ -8,5 +8,12 @@ namespace SimpleGame.ECS.Components
         {
             ParentEntityId = EntityManager.InvalidEntityId;
         }
+
+        public override object Clone() =>
+            new ParentEntityComponent()
+            {
+                ParentEntityId = ParentEntityId
+            };
+
     }
 }

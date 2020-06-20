@@ -3,7 +3,7 @@ using OpenTK;
 
 namespace SimpleGame.ECS.Components
 {
-    public class TransformComponent : Component
+    public sealed class TransformComponent : Component
     {
         public float X { get; set; }
         public float Y { get; set; }
@@ -23,6 +23,18 @@ namespace SimpleGame.ECS.Components
                 Matrix4.CreateRotationY(RotationY) *
                 Matrix4.CreateRotationZ(RotationZ) *
                 Matrix4.CreateTranslation(X, Y, Z);
+
+        public override object Clone() =>
+            new TransformComponent()
+            {
+                X = X, Y = Y, Z = Z,
+                RotationX = RotationX,
+                RotationY = RotationY,
+                RotationZ = RotationZ,
+                ScaleX = ScaleX,
+                ScaleY = ScaleY,
+                ScaleZ = ScaleZ
+            };
 
     }
 }
