@@ -22,20 +22,18 @@ namespace SimpleGame.ECS.Systems
             var entities = OwnerApp.EntityManager.WithComponent<RigidBodyComponent, TransformComponent>();
 
             foreach (var entity in entities)
-            {
-                //OwnerApp.EntityManager.GetComponent<RigidBodyComponent>(entity).Body = new RigidBody(new BoxShape(0.2f, 0.2f, 0.2f));
-                var body = OwnerApp.EntityManager.GetComponent<RigidBodyComponent>(entity).Body;
-                var transform = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
-                
-                InitBody(ref body, transform, entity);
-
-                OwnerApp.EntityManager.GetComponent<RigidBodyComponent>(entity).Body = body;
+            { 
+                InitBody(entity);
             }
         }
 
-        public void InitBody(ref RigidBody body, TransformComponent transform, int entity)
+        public void InitBody(int entity)
         {
-            body.Shape = new BoxShape(0.2f, 0.2f, 0.2f);
+            var bodyComponent = OwnerApp.EntityManager.GetComponent<RigidBodyComponent>(entity);
+            var body = bodyComponent.Body;
+            var transform = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
+
+            body.Shape = new BoxShape(0.2f, 0.2f, 0.2f); // TODO
             body.Position = new JVector(transform.X, transform.Y, transform.Z);
             body.Orientation = JMatrix.CreateRotationX(transform.RotationX) *
                                JMatrix.CreateRotationY(transform.RotationY) *
@@ -47,13 +45,13 @@ namespace SimpleGame.ECS.Systems
             body.IsActive = true; // TODO
             body.IsStatic = !OwnerApp.EntityManager.HasComponent<MovableComponent>(entity);
 
-            body.Mass = 1.0f; // TODO
+            body.Mass = bodyComponent.Mass;
             body.Material = new Material()
             {
-                Restitution = 0.2f,
-                StaticFriction = 0.8f,
-                KineticFriction = 0.8f
-            }; // TODO
+                Restitution = bodyComponent.Restitution,
+                StaticFriction = bodyComponent.StaticFriction,
+                KineticFriction = bodyComponent.KineticFriction
+            };
 
             _world.AddBody(body);
         }
@@ -103,9 +101,7 @@ namespace SimpleGame.ECS.Systems
 
         public override void Update(uint ms)
         {
-            float step = ms / 1000.0f;
-
-            _world.Step(1 / 60.0f, false);
+             _world.Step(1 / 60.0f, false);
 
             var entities = OwnerApp.EntityManager.WithComponent<RigidBodyComponent>();
 
