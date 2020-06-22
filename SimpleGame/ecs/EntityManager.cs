@@ -20,16 +20,13 @@ namespace SimpleGame.ECS
             Entities = new List<int>();
         }
 
-        public void AddComponent(int entityId, Component component)
+        private void AddComponent(int entityId, Component component)
         {
             if (!Entities.Contains(entityId))
                 throw new ArgumentException($"Entity with id={entityId} does not exist.");
 
             if (component is null)
                 throw new ArgumentNullException(nameof(component));
-
-            if (component.EntityId != InvalidEntityId)
-                throw new ArgumentException("This component already have owner entity.");
 
             if (!_componentsByType.ContainsKey(component.GetType()))
                 _componentsByType.Add(component.GetType(), new Dictionary<int, Component>());
