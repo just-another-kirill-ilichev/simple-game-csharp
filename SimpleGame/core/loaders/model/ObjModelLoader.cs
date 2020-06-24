@@ -8,14 +8,14 @@ using SimpleGame.Core.Meshes;
 
 namespace SimpleGame.Core.Loaders.Model
 {
-    public class ObjModelParseError : GameException
+    public class ObjModelParseError : LoaderException
     {
         public ObjModelParseError(string file, string line, int lineNumber) :
-            base($"An exception occurred in file: {file}\nAt line {lineNumber}: {line}")
+            base(file, $"At line {lineNumber}: {line}")
         { }
 
         public ObjModelParseError(string file, string line, int lineNumber, Exception inner) :
-            base($"An exception occurred in file: {file}\nAt line {lineNumber}: {line}", inner)
+            base(file, $"At line {lineNumber}: {line}", inner)
         { }
     }
 
@@ -83,10 +83,7 @@ namespace SimpleGame.Core.Loaders.Model
                             ParseFace(tokens);
                             break;
                         case "mtllib":
-                            if (tokens.Length == 2)
-                                ParseMtl(tokens[1]);
-                            else
-                                throw new GameException(); // TODO
+                            ParseMtl(tokens);
                             break;
                         default:
                             break;
@@ -121,7 +118,7 @@ namespace SimpleGame.Core.Loaders.Model
                 .ToArray();
 
             if (numbersBuffer.Length != 2)
-                throw new GameException();
+                throw new ArgumentException();
 
             _uvs.Add(new Vector2(numbersBuffer[0], numbersBuffer[1]));
         }
@@ -133,7 +130,7 @@ namespace SimpleGame.Core.Loaders.Model
                 .ToArray();
 
             if (numbersBuffer.Length != 3)
-                throw new GameException();
+                throw new ArgumentException();
 
             _normals.Add(new Vector3(numbersBuffer[0], numbersBuffer[1], numbersBuffer[2]));
         }
@@ -166,9 +163,13 @@ namespace SimpleGame.Core.Loaders.Model
             _data.AddRange(vertexDefs);
         }
 
-        void ParseMtl(string path)
+        void ParseMtl(string[] tokens)
         {
+            if (tokens.Length != 2)
+                throw new ArgumentException();
 
+            var path = tokens[1];
+            // TODO
         }
     }
 }

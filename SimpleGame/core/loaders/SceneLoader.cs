@@ -28,6 +28,7 @@ namespace SimpleGame.Core.Loaders
     public class SceneLoader
     {
         private readonly Dictionary<string, Component[]> _prefabs; // TODO clear old
+        private string _file;
         private readonly JsonSerializerSettings _serializationSetting;
 
         public Application OwnerApp { get; }
@@ -52,6 +53,7 @@ namespace SimpleGame.Core.Loaders
             OwnerApp.ResourceManager.Clear();
             OwnerApp.SystemManager.Clear();
 
+            _file = path;
             string content = File.ReadAllText(path); 
             var sceneData = JsonConvert.DeserializeObject(content, typeof(SceneData), _serializationSetting) as SceneData;
 
@@ -81,7 +83,7 @@ namespace SimpleGame.Core.Loaders
                 bool success = _prefabs.TryAdd(prefab.Key, prefab.Value);
 
                 if (!success)
-                    throw new GameException($"Many prefabs with the same name are not allowed (in file {path})");
+                    throw new LoaderException(_file, $"Many prefabs with the same name are not allowed (in file {path})");
             }
         }
 
@@ -111,7 +113,7 @@ namespace SimpleGame.Core.Loaders
                 if (!String.IsNullOrEmpty(entity.PrefabName))
                 {
                     if (!_prefabs.TryGetValue(entity.PrefabName, out var prefab))
-                        throw new GameException($"Prefab definition not found, prefab name - {entity.PrefabName}");
+                        throw new LoaderException(_file, $"Prefab definition not found, prefab name - {entity.PrefabName}");
 
                     prefab = prefab.Select(x => x.Clone() as Component).ToArray();
                     

@@ -44,7 +44,7 @@ namespace SimpleGame.Core
             {
                 SceneLoader.LoadScene(ScenePath);
             }
-            catch (GameException ex)
+            catch (LoaderException ex)
             {
                 _logger.Error(ex, "An exception occurred while loading scene from {0}", ScenePath);
             }
