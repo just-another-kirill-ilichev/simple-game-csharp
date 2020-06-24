@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using SimpleGame.Core.Loaders.Model;
 
 namespace SimpleGame.Core.Resources
@@ -6,6 +7,7 @@ namespace SimpleGame.Core.Resources
     {
         private MtlMaterial _material;
 
+        [JsonConstructor]
         public Model(string modelPath) : base()
         {
             var loader = new ObjModelLoader(modelPath);

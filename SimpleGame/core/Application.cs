@@ -10,10 +10,12 @@ namespace SimpleGame.Core
 {
     public class Application : GameWindow
     {
+        private const string ScenePath = "../resources/default_scene.json"; // TODO store default scene location in config
+
         public ResourceManager ResourceManager { get; }
         public EntityManager EntityManager { get; }
         public SystemManager SystemManager { get; }
-        public SceneLoader SceneLoader { get; }
+        internal SceneLoader SceneLoader { get; }
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
@@ -38,18 +40,15 @@ namespace SimpleGame.Core
 
         protected override void OnLoad(EventArgs e)
         {
-            string path = "../resources/test.json"; // TODO
-
             try
             {
-                SceneLoader.LoadScene(path);
+                SceneLoader.LoadScene(ScenePath);
             }
-            catch (Exception ex) // TODO
+            catch (GameException ex)
             {
-                _logger.Error(ex, "An exception occurred while loading scene from {0}", path);
+                _logger.Error(ex, "An exception occurred while loading scene from {0}", ScenePath);
             }
             
-
             base.OnLoad(e);
         }
 

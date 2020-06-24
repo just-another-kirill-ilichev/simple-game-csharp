@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using OpenTK.Graphics.OpenGL4;
 
 
@@ -10,6 +11,7 @@ namespace SimpleGame.Core.Resources
     {
         private int _program;
 
+        [JsonConstructor]
         public Shader(string fragmentPath, string vertexPath) :
             this(new List<(ShaderType type, string path)>() {
                     (ShaderType.FragmentShader, fragmentPath), (ShaderType.VertexShader, vertexPath)
