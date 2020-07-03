@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using SimpleGame.ECS;
 using SimpleGame.ECS.Components;
 using SimpleGame.ECS.Systems;
-using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core.Loaders
 {
@@ -20,7 +19,7 @@ namespace SimpleGame.Core.Loaders
     public class SceneData
     {
         public string[] PrefabPaths { get; set; }
-        public Dictionary<string, Resource> Resources { get; set; }
+        public Dictionary<string, ResourceData> Resources { get; set; }
         public string[] Systems { get; set; }
         public EntityData[] Entities { get; set; }
     }
@@ -92,13 +91,14 @@ namespace SimpleGame.Core.Loaders
             // OwnerApp.ResourceManager.Add("meshPlane");
         }
 
-        private void LoadResources(Dictionary<string, Resource> resources)
+        private void LoadResources(Dictionary<string, ResourceData> resources)
         {
             LoadDefaultResources();
 
-            foreach (var resource in resources)
+            foreach (var resourceData in resources)
             {
-                OwnerApp.ResourceManager.Add(resource.Key, resource.Value);
+                var resource = ResourceLoader.Instance.LoadResource(resourceData.Value);
+                OwnerApp.ResourceManager.Add(resourceData.Key, resource);
             }
         }
 
