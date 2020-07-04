@@ -2,7 +2,7 @@ using SimpleGame.Core.Meshes;
 
 namespace SimpleGame.Core.Resources
 {
-    public class Sprite : BasicMaterialMesh
+    class Sprite : BasicMaterialMesh
     {
         public Sprite(string texturePath) : base()
         {

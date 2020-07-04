@@ -1,7 +1,8 @@
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
 
@@ -69,13 +70,17 @@ namespace SimpleGame.Core.Resources
             return GL.GetUniformLocation(_program, name);
         }
 
-
         public int GetAttributeLocation(string name)
         {
             CheckDisposed();
             return GL.GetAttribLocation(_program, name);
         }
 
+        public void SetUniform(int location, bool transpose, ref Matrix4 matrix)
+        {
+            Use();
+            GL.UniformMatrix4(location, transpose, ref matrix);
+        }
 
         public void Use()
         {
