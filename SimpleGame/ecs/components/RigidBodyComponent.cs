@@ -5,6 +5,8 @@ namespace SimpleGame.ECS.Components
 {
     public class RigidBodyComponent : Component
     {
+        public string ShapeResourceRef { get; set; }
+
         public float Mass { get; set; } = 1.0f; // TODO
         public float Restitution { get; set; } = 0.2f; // TODO
         public float StaticFriction { get; set; } = 0.8f; // TODO

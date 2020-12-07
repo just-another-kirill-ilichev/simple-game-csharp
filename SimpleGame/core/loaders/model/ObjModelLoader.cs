@@ -5,33 +5,22 @@ using System.IO;
 using System.Linq;
 using OpenTK;
 using SimpleGame.Core.Meshes;
+using SimpleGame.Core.Resources;
 
 namespace SimpleGame.Core.Loaders.Model
 {
-    public class ObjModelParseError : LoaderException
-    {
-        public ObjModelParseError(string file, string line, int lineNumber) :
-            base(file, $"At line {lineNumber}: {line}")
-        { }
-
-        public ObjModelParseError(string file, string line, int lineNumber, Exception inner) :
-            base(file, $"At line {lineNumber}: {line}", inner)
-        { }
-    }
-
-    public struct MtlMaterial
-    {
-        public string AmbientTextureMap { get; set; } // TODO
-        public string DiffuseTextureMap { get; set; }
-        public string SpecularTextureMap { get; set; }
-    }
-
     public class ObjModelLoader
     {
         private readonly List<BasicVertex> _data;
+        private readonly uint[] _indices;
         private readonly List<Vector4> _vertices;
         private readonly List<Vector3> _normals;
         private readonly List<Vector2> _uvs;
+
+        private readonly string _path;
+        private string _line;
+        private int _lineNumber;
+
         private readonly Dictionary<string, MtlMaterial> _materials;
 
         public IReadOnlyDictionary<string, MtlMaterial> Materials => _materials;
@@ -56,43 +45,39 @@ namespace SimpleGame.Core.Loaders.Model
         private void ParseFile(string path)
         {
             var lines = File.ReadAllLines(path);
-            int lineNumber = 0;
+            _lineNumber = 0;
 
-            try
+
+            foreach (var line in lines)
             {
-                foreach (var line in lines)
+                _lineNumber++;
+                _line = line;
+
+                var tokens = line.Split('#')[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                if (tokens.Length == 0)
+                    continue;
+
+                switch (tokens[0])
                 {
-                    lineNumber++;
-                    var tokens = line.Split('#')[0].Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-                    if (tokens.Length == 0)
-                        continue;
-
-                    switch (tokens[0])
-                    {
-                        case "v":
-                            ParseVertex(tokens);
-                            break;
-                        case "vt":
-                            ParseUV(tokens);
-                            break;
-                        case "vn":
-                            ParseNormal(tokens);
-                            break;
-                        case "f":
-                            ParseFace(tokens);
-                            break;
-                        case "mtllib":
-                            ParseMtl(tokens);
-                            break;
-                        default:
-                            break;
-                    }
+                    case "v":
+                        ParseVertex(tokens);
+                        break;
+                    case "vt":
+                        ParseUV(tokens);
+                        break;
+                    case "vn":
+                        ParseNormal(tokens);
+                        break;
+                    case "f":
+                        ParseFace(tokens);
+                        break;
+                    case "mtllib":
+                        ParseMtl(tokens);
+                        break;
+                    default:
+                        break;
                 }
-            }
-            catch (Exception e) // TODO ArgumentException and FormatException
-            {
-                throw new ObjModelParseError(path, lines[lineNumber], lineNumber, e);
             }
         }
 
@@ -103,7 +88,7 @@ namespace SimpleGame.Core.Loaders.Model
                 .ToArray();
 
             if (numbersBuffer.Length != 4 && numbersBuffer.Length != 3)
-                throw new ArgumentException("Invalid number of tokens to create vertex");
+                throw new LoaderException(_path, _lineNumber, _line, "Invalid number of tokens to create vertex");
 
             if (numbersBuffer.Length == 4)
                 _vertices.Add(new Vector4(numbersBuffer[0], numbersBuffer[1], numbersBuffer[2], numbersBuffer[3]));
@@ -118,7 +103,7 @@ namespace SimpleGame.Core.Loaders.Model
                 .ToArray();
 
             if (numbersBuffer.Length != 2)
-                throw new ArgumentException();
+                throw new ArgumentException(); // TODO
 
             _uvs.Add(new Vector2(numbersBuffer[0], numbersBuffer[1]));
         }
@@ -130,7 +115,7 @@ namespace SimpleGame.Core.Loaders.Model
                 .ToArray();
 
             if (numbersBuffer.Length != 3)
-                throw new ArgumentException();
+                throw new ArgumentException(); // TODO
 
             _normals.Add(new Vector3(numbersBuffer[0], numbersBuffer[1], numbersBuffer[2]));
         }
@@ -154,11 +139,22 @@ namespace SimpleGame.Core.Loaders.Model
             return new BasicVertex(tempVertex, tempNormal, tempUV);
         }
 
+        private (int, int, int) ParseIndices(string token)
+        {
+            var idx = token.Split('/');
+
+            return (int.Parse(idx[0]), int.Parse(idx[1]), int.Parse(idx[2])); // TODO
+        }
+
         private void ParseFace(string[] tokens)
         {
             var vertexDefs = tokens.Skip(1)
                 .Select(token => ParseVertexDef(token))
                 .ToArray();
+
+
+            //var idxes = tokens.Skip(1).Select(token => ParseIndices(token));
+            //_indices.AddRange(idxes);
 
             _data.AddRange(vertexDefs);
         }
@@ -166,10 +162,27 @@ namespace SimpleGame.Core.Loaders.Model
         void ParseMtl(string[] tokens)
         {
             if (tokens.Length != 2)
-                throw new ArgumentException();
+                throw new ArgumentException(); // TODO
 
             var path = tokens[1];
-            // TODO
+            //var materials = new MtlMaterialLoader(path).Materials;
+
+            /*foreach(var material in materials)
+            {
+                _materials.Add(material.Key, material.Value);
+            }*/
+        }
+
+        internal BasicMaterialMesh BuildModel()
+        {
+            var result = new BasicMaterialMesh();
+
+            var material = Materials["Default"];
+            result.SetupTexture(new Texture(material.AmbientTextureMap));
+
+            result.SetupBuffers(Mesh); // TODO
+
+            return result;
         }
     }
 }

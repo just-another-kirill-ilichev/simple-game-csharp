@@ -30,6 +30,7 @@ namespace SimpleGame.Core.Resources
 
             _vao.SetVertexAttribute(0, 4, VertexAttribPointerType.Float, BasicVertex.Size, 0);
             _vao.SetVertexAttribute(1, 2, VertexAttribPointerType.Float, BasicVertex.Size, 16);
+            _vao.SetVertexAttribute(2, 3, VertexAttribPointerType.Float, BasicVertex.Size, 24);
         }
 
         public virtual void Render(Shader shader, Matrix4 modelTransform, Matrix4 projectionViewTransform)

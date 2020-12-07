@@ -9,12 +9,11 @@ namespace SimpleGame.ECS.Systems
 {
     public class RenderingSystem : SystemBase
     {
-        private Model _cube;
+        private Sprite _sprite;
 
         public RenderingSystem(Application owner) : base(owner)
         {
-            _cube = OwnerApp.ResourceManager.Get<Model>("modelCube");//new Sprite("../resources/dotted.png");//
-            
+            _sprite = new Sprite("../resources/dotted.png"); // TODO
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Enable(EnableCap.DepthTest);
@@ -22,36 +21,43 @@ namespace SimpleGame.ECS.Systems
 
         private Matrix4 CreateProjectionViewMatrix()
         {
-            var camera = OwnerApp.EntityManager.WithComponent<ThirdPersonCameraComponent>().First();
+            var character = OwnerApp.EntityManager.WithComponent<ThirdPersonCameraComponent>().First();
 
-            var characterTransform = OwnerApp.EntityManager.GetComponent<TransformComponent>(camera);
-            var cameraSettings = OwnerApp.EntityManager.GetComponent<ThirdPersonCameraComponent>(camera);
+            var characterTransform = OwnerApp.EntityManager.GetComponent<TransformComponent>(character);
+            var camera = OwnerApp.EntityManager.GetComponent<ThirdPersonCameraComponent>(character);
 
             var characterPosition = new Vector3(characterTransform.X, characterTransform.Y, characterTransform.Z);
-            var cameraOffset = new Vector3(cameraSettings.OffsetX, cameraSettings.OffsetY, cameraSettings.OffsetZ);
+            var cameraOffset = new Vector3(camera.OffsetX, camera.OffsetY, camera.OffsetZ);
 
             var viewMatrix = Matrix4.LookAt(characterPosition + cameraOffset, characterPosition, Vector3.UnitY);
 
             var projectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                cameraSettings.FieldOfView, 800 / 600, 0.1f, 4000f);
+                camera.FieldOfView, camera.AspectRatio, camera.NearPlane, camera.FarPlane);
 
-            var projectionView = viewMatrix * projectionMatrix; // TODO?: Weird multiplication order
+            var projectionView = viewMatrix * projectionMatrix; // TODO(?): Odd multiplication order
 
             return projectionView;
         }
 
         public override void Redraw()
         {
-            var shader = OwnerApp.ResourceManager.Get<Shader>("shaderModelTest");
-            var entities = OwnerApp.EntityManager.WithComponent<SimpleCubeComponent>();
-            
+            var entities = OwnerApp.EntityManager.WithComponent<ModelComponent>();
             var projectionView = CreateProjectionViewMatrix();
+
+            // DEBUG
+            var _shader = OwnerApp.ResourceManager.Get<Shader>("shaderDefault");
+            _sprite.Render(_shader, Matrix4.Identity, projectionView);
+            // DEBUG
 
             foreach (var entity in entities)
             {
-                var transform = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
+                var modelComponent = OwnerApp.EntityManager.GetComponent<ModelComponent>(entity);
+                var transformComponent = OwnerApp.EntityManager.GetComponent<TransformComponent>(entity);
 
-                _cube.Render(shader, transform.Transform, projectionView);
+                var model = OwnerApp.ResourceManager.Get<BasicMaterialMesh>(modelComponent.ModelResourceRef);
+                var shader = OwnerApp.ResourceManager.Get<Shader>(modelComponent.ShaderResourceRef);
+
+                model.Render(shader, transformComponent.Transform, projectionView);
             }
         }
     }

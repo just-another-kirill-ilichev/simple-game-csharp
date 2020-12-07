@@ -12,17 +12,17 @@ namespace SimpleGame.ECS
 
         private Dictionary<Type, Dictionary<int, Component>> _componentsByType;
 
-        public List<int> Entities { get; }
+        private List<int> _entities { get; }
 
         public EntityManager()
         {
             _componentsByType = new Dictionary<Type, Dictionary<int, Component>>();
-            Entities = new List<int>();
+            _entities = new List<int>();
         }
 
         private void AddComponent(int entityId, Component component)
         {
-            if (!Entities.Contains(entityId))
+            if (!_entities.Contains(entityId))
                 throw new ArgumentException($"Entity with id={entityId} does not exist.");
 
             if (component is null)
@@ -34,9 +34,17 @@ namespace SimpleGame.ECS
             _componentsByType[component.GetType()].Add(entityId, component);
         }
 
+        private IReadOnlyDictionary<int, Component> GetComponentsByType<T>()
+        {
+            if (!_componentsByType.ContainsKey(typeof(T)))
+                return ImmutableDictionary.Create<int, Component>();
+
+            return _componentsByType[typeof(T)];
+        }
+
         public void CreateEntity(int entityId, IEnumerable<Component> entityComponents)
         {
-            if (Entities.Contains(entityId))
+            if (_entities.Contains(entityId))
                 throw new ArgumentException($"Entity with id = {entityId} already exist.");
 
             if (entityId == InvalidEntityId)
@@ -45,7 +53,7 @@ namespace SimpleGame.ECS
             if (entityComponents is null)
                 throw new ArgumentNullException(nameof(entityComponents));
 
-            Entities.Add(entityId);
+            _entities.Add(entityId);
 
             foreach (var component in entityComponents)
             {
@@ -55,7 +63,7 @@ namespace SimpleGame.ECS
 
         public void RemoveEntity(int entityId)
         {
-            if (!Entities.Contains(entityId))
+            if (!_entities.Contains(entityId))
                 throw new ArgumentException($"There is no entity with id = {entityId}");
 
             foreach (var components in _componentsByType.Values)
@@ -69,7 +77,7 @@ namespace SimpleGame.ECS
 
         public IEnumerable<Component> GetEntity(int entityId)
         {
-            if (!Entities.Contains(entityId))
+            if (!_entities.Contains(entityId))
                 throw new ArgumentException($"There is no entity with id = {entityId}");
 
             var temp = new List<Component>();
@@ -95,7 +103,7 @@ namespace SimpleGame.ECS
 
         public bool HasComponent<T>(int entityId) where T : Component
         {
-            if (!Entities.Contains(entityId))
+            if (!_entities.Contains(entityId))
                 throw new ArgumentException($"There is no entity with id = {entityId}");
 
             if (_componentsByType.ContainsKey(typeof(T)))
@@ -116,14 +124,6 @@ namespace SimpleGame.ECS
             }
 
             return _componentsByType[typeof(T)][entityId] as T;
-        }
-
-        public IReadOnlyDictionary<int, Component> GetComponentsByType<T>()
-        {
-            if (!_componentsByType.ContainsKey(typeof(T)))
-                return ImmutableDictionary.Create<int, Component>();
-
-            return _componentsByType[typeof(T)];
         }
 
         public IEnumerable<int> WithComponent<T>()
@@ -147,7 +147,7 @@ namespace SimpleGame.ECS
         public void Clear()
         {
             _componentsByType.Clear();
-            Entities.Clear();
+            _entities.Clear();
         }
     }
 }
